@@ -161,6 +161,21 @@ class Attention(nn.Module):
 
         if self.conv_type == 'DWConv':
             if self.use_cv_attn and self.use_attn:
+                # Simplified Channel Attention
+                self.sca = nn.Sequential(
+                    nn.AdaptiveAvgPool2d(1),
+                    nn.Conv2d(in_channels=dim, out_channels=dim, kernel_size=1, padding=0, stride=1,
+                              groups=1, bias=True),
+                )
+
+                # Simplified Spatial Attention
+                self.ssa = nn.Sequential(
+                    nn.Conv2d(in_channels=dim, out_channels=1, kernel_size=3, padding=1, stride=1,
+                              groups=1, bias=True)
+                )
+
+                # SimpleGate
+                self.sg = SimpleGate()
                 self.conv = nn.Conv2d(dim, 2 * dim, kernel_size=5, padding=2, groups=dim, padding_mode='reflect')
             else:
                 self.conv = nn.Conv2d(dim, dim, kernel_size=5, padding=2, groups=dim, padding_mode='reflect')
@@ -173,21 +188,7 @@ class Attention(nn.Module):
             self.attn = WindowAttention(dim, window_size, num_heads)
 
         self.apply(self._init_weights)
-        # Simplified Channel Attention
-        self.sca = nn.Sequential(
-            nn.AdaptiveAvgPool2d(1),
-            nn.Conv2d(in_channels=dim, out_channels=dim, kernel_size=1, padding=0, stride=1,
-                      groups=1, bias=True),
-        )
 
-        # Simplified Spatial Attention
-        self.ssa = nn.Sequential(
-            nn.Conv2d(in_channels=dim, out_channels=1, kernel_size=3, padding=1, stride=1,
-                      groups=1, bias=True)
-        )
-
-        # SimpleGate
-        self.sg = SimpleGate()
 
     def _init_weights(self, m):
         if isinstance(m, nn.Conv2d):
@@ -562,7 +563,7 @@ def dehazeformer_t():
 def dehazeformer_s():
     return DehazeFormer(
         embed_dims=[24, 48, 96, 48, 24],
-        mlp_ratios=[2., 4., 4., 2., 2.],
+        mlp_ratios=[2., 2., 2., 2., 2.],
         depths=[8, 8, 8, 4, 4],
         num_heads=[2, 4, 6, 1, 1],
         attn_ratio=[1 / 4, 1 / 2, 3 / 4, 0, 0],

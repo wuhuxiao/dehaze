@@ -165,7 +165,9 @@ class HJCBlock(nn.Module):
         x = self.norm1(x)
 
         x = self.conv1(x)
+        # k=3,sa
         x = self.conv2(x)
+
         x = self.sg(x)
         x = x * self.sca(x)
         x = self.conv3(x)

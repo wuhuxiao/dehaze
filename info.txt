@@ -1,1 +1,1 @@
-macs: 12.56 GMac  paramsL 1.43 M
+macs: 12.56 GMac  paramsL 1.38 M
