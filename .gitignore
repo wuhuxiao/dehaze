@@ -1,4 +1,5 @@
 # Add by user
+wandb/
 .vscode/
 _backup/
 data/

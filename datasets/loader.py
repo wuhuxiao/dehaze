@@ -61,7 +61,7 @@ class PairLoader(Dataset):
 		self.only_h_flip = only_h_flip
 
 		self.root_dir = os.path.join(data_dir, sub_dir)
-		self.img_names = sorted(os.listdir(os.path.join(self.root_dir, 'GT')))
+		self.img_names = sorted(os.listdir(os.path.join(self.root_dir, 'gt')))
 		self.img_num = len(self.img_names)
 
 	def __len__(self):
@@ -73,8 +73,9 @@ class PairLoader(Dataset):
 
 		# read image, and scale [0, 1] to [-1, 1]
 		img_name = self.img_names[idx]
-		source_img = read_img(os.path.join(self.root_dir, 'hazy', img_name)) * 2 - 1
-		target_img = read_img(os.path.join(self.root_dir, 'GT', img_name)) * 2 - 1
+		# scale to [-1,1]
+		source_img = read_img(os.path.join(self.root_dir, 'fog', img_name)) * 2 - 1
+		target_img = read_img(os.path.join(self.root_dir, 'gt', img_name)) * 2 - 1
 		
 		if self.mode == 'train':
 			[source_img, target_img] = augment([source_img, target_img], self.size, self.edge_decay, self.only_h_flip)
